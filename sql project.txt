@@ -1,0 +1,202 @@
+CUSTOMER TABLE–Based
+1. Display all records from the CUSTOMER table.
+SQL> select * from customer;
+
+2. Find the first name and area of customer with cust_id = 'C03'.
+SQL> select f_name,area from customer where cust_id='C03';
+
+
+3. List names and phone numbers of all customers.
+SQL> select f_name,l_name,phone_no from customer;
+
+
+4. Count the total number of customers.
+SQL> select count(cust_id) from customer;
+
+
+5. Find customers staying in area 'DA', 'MU', or 'GH'.
+SQL> select f_name from customer where area in ('DA','MU','GH');
+
+
+6. Change the area of customer 'C01' to 'JK'.
+SQL> update customer set area='JK' where cust_id='C01';
+
+
+7. Find customers whose first name starts with the letter 'P'.
+SQL> select * from customer where f_name like 'P%';
+
+
+8. Find customers whose area has 'A' as the second character.
+SQL> select * from customer where area like '_A%';
+
+
+9. Update the phone number of customer 'Rajesh' to 567889.
+SQL> update customer set phone_no=567889 where f_name='Rajesh';
+
+
+10. Delete customer with cust_id = 'C09'.
+SQL> delete customer where cust_id='C09';
+delete customer where cust_id='C09'
+*
+ERROR at line 1:
+ORA-02292: integrity constraint (SYSTEM.SYS_C007021) violated - child record
+found
+
+
+
+
+CATEGORY & PRODUCT TABLE–Based
+11. Display all product categories.
+SQL> select category_name from category;
+
+
+12. List all products with price greater than 150.
+select product_name from product where price>150;
+
+
+13. Find products priced between 100 and 180.
+SQL> select product_name from product where price between 100 and 180;
+
+
+14. Display product name and price of all products.
+SQL> select product_name,price from product;
+
+
+15. Count the number of products in each category.
+SQL> SELECT category_id, COUNT(*) AS total_products FROM product GROUP BY category_id;
+
+
+16. Find the maximum and minimum product price.
+SQL> select max(price),min(price) from product;
+
+
+17. Calculate the average price of all products.
+SQL> select avg(price) from product;
+
+
+18. Find products belonging to 'Electronics' or 'Clothing' category.
+SQL> select p.product_name,c.category_name from product p join category c on c.category_id=p.category_id where category_name in ('Electronics','Clothing');
+
+
+19. Increase the price of product 'Laptop' to 55000.
+SQL> update product set price=55000 where product_name='Laptop';
+
+
+20. List products sorted by product name in ascending order.
+select * from product order by product_name asc;
+
+
+
+
+ORDERS TABLE–Based
+21. Display all orders placed by customer 'C02'.
+SQL> select * from orders where cust_id='C02';
+
+
+22. Count total number of orders.
+SQL> select count(*) from orders;
+
+
+23. Find orders placed before August.
+SQL> select * from orders where order_date<'1-Aug-24';
+
+
+24. Display order_id and order_date of all orders.
+SQL> select order_id,order_date from orders;
+
+
+25. Change the total amount of order 'O05' to 12000.
+SQL> update orders set total_amount=12000 where order_id='O005';
+
+
+ORDER_ITEMS TABLE-Based
+
+26. Display all order items.
+    SQL> select * from order_items;
+
+27. Find total quantity ordered for each product.
+    SQL> select product_id,sum(quantity) as total_quantity from order_items group by product_id;
+
+28. Find products ordered more than 3 times.
+    SQL> select product_id,count(*) as times_ordered from order_items group by product_id having count(*)>3;
+
+29. Calculate total price per order using order_items table.
+    SQL> select order_id,sum(quantity*price) as total_price from order_items group by order_id;
+
+30. Find products that were never ordered.
+    SQL> select p.product_id,p.product_name from product p left join order_items oi on p.product_id=oi.product_id where oi.product_id is null;
+
+
+
+
+INVOICE TABLE-Based
+
+31. Display all invoices.
+    SQL> select * from invoice;
+
+32. Find invoice details for order_id 'O03'.
+    SQL> select * from invoice where order_id='O003';
+
+33. Delete invoice with inv_no = 'I08'.
+    SQL> delete from invoice where inv_no='I008';
+
+34. Change invoice date of inv_no 'I07' to 16-08-2023.
+    SQL> update invoice set inv_date=to_date('16-08-2023','DD-MM-YYYY') where inv_no='I007';
+
+35. Find invoices generated between two given dates.
+    SQL> select * from invoice where inv_date between to_date('01-01-2024','DD-MM-YYYY') and to_date('31-01-2024','DD-MM-YYYY');
+
+
+
+
+PAYMENT TABLE-Based
+
+36. Display all payment records.
+    SQL> select * from payment;
+
+37. Find payments with payment status 'FAILED'.
+    SQL> select * from payment where payment_status='FAILED';
+
+38. Count number of successful payments.
+    SQL> select count(*) as successful_payments from payment where payment_status='Paid';
+
+39. Find payments made using 'UPI'.
+    SQL> select * from payment where payment_mode='UPI';
+
+40. Delete payment record with payment_id 'P09'.
+    SQL> delete from payment where payment_id='P009';
+
+
+
+
+JOIN & AGGREGATION-Based
+
+41. Display customer names along with their order IDs.
+    SQL> select c.f_name,o.order_id from customer c join orders o on c.cust_id=o.cust_id;
+
+42. List product names and quantities ordered by each customer.
+    SQL> select c.f_name,p.product_name,oi.quantity from customer c join orders o on c.cust_id=o.cust_id join order_items oi on o.order_id=oi.order_id join product p on oi.product_id=p.product_id;
+
+43. Find total amount spent by each customer.
+    SQL> select c.f_name,sum(o.total_amount) as total_spent from customer c join orders o on c.cust_id=o.cust_id group by c.f_name;
+
+44. Display invoice number and customer name.
+    SQL> select i.inv_no,c.f_name from invoice i join orders o on i.order_id=o.order_id join customer c on o.cust_id=c.cust_id;
+
+45. Find customers who have placed at least one order.
+    SQL> select distinct c.f_name from customer c join orders o on c.cust_id=o.cust_id;
+
+46. Find customers who have not placed any orders.
+    SQL> select c.f_name from customer c left join orders o on c.cust_id=o.cust_id where o.order_id is null;
+
+47. Display product name and category name for all products.
+    SQL> select p.product_name,c.category_name from product p join category c on p.category_id=c.category_id;
+
+48. Find total sales amount for each category.
+    SQL> select c.category_name,sum(oi.quantity*oi.price) as total_sales from category c join product p on c.category_id=p.category_id join order_items oi on p.product_id=oi.product_id group by c.category_name;
+
+49. Find the customer who has spent the maximum amount.
+    SQL> select c.f_name,o.total_amount from customer c join orders o on c.cust_id=o.cust_id where o.total_amount=(select max(total_amount) from orders);
+
+50. Display product names ordered by customers from area 'DA'.
+    SQL> select p.product_name,c.f_name from customer c join orders o on c.cust_id=o.cust_id join order_items oi on o.order_id=oi.order_id join product p on p.product_id=oi.product_id where c.area='DA';
